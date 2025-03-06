@@ -3,6 +3,7 @@ import Header from "./Header";
 import HeroSection from "./HeroSection";
 import FeatureSection from "./FeatureSection";
 import FeatureShowcase from "./FeatureShowcase";
+import FeatureCarousel from "./FeatureCarousel";
 import VideoShowcase from "./VideoShowcase";
 import NextjsTemplate from "../templates/NextjsTemplate";
 import ReactTemplate from "../templates/ReactTemplate";
@@ -134,6 +135,9 @@ const Home = () => {
             <section id="features">
               <FeatureSection />
             </section>
+
+            {/* Rotating Feature Cards */}
+            <FeatureCarousel />
 
             {/* Feature Showcase */}
             <FeatureShowcase />
