@@ -24,6 +24,10 @@ import {
   Cpu,
 } from "lucide-react";
 import CodeEditor from "./CodeEditor";
+import NextjsTemplate from "../templates/NextjsTemplate";
+import ReactTemplate from "../templates/ReactTemplate";
+import NodejsTemplate from "../templates/NodejsTemplate";
+import CloudflareTemplate from "../templates/CloudflareTemplate";
 
 interface DashboardProps {
   onNewProject?: () => void;
@@ -36,6 +40,56 @@ const Dashboard: React.FC<DashboardProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState("projects");
   const [selectedProject, setSelectedProject] = useState<string | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  const handleGenerateCode = async (
+    projectId: string,
+    generationType: string,
+  ) => {
+    setIsGenerating(true);
+    setSelectedProject(projectId);
+
+    try {
+      // In a real app, this would call the AI service
+      // Simulate API call with timeout
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      // Find the project
+      const project = projects.find((p) => p.id === projectId);
+
+      if (!project) {
+        throw new Error(`Project not found: ${projectId}`);
+      }
+
+      // Mock successful generation
+      console.log(`Generated ${generationType} for ${project.name}`);
+
+      // In a real app, we would update the project with the new code
+      const successMessage = document.createElement("div");
+      successMessage.className =
+        "fixed top-4 right-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded z-50";
+      successMessage.innerHTML = `<p>Successfully generated ${generationType} for ${project.name}.</p>`;
+      document.body.appendChild(successMessage);
+
+      setTimeout(() => {
+        successMessage.remove();
+      }, 3000);
+    } catch (error) {
+      console.error(`Failed to generate ${generationType}:`, error);
+
+      const errorMessage = document.createElement("div");
+      errorMessage.className =
+        "fixed top-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded z-50";
+      errorMessage.innerHTML = `<p>Failed to generate ${generationType}. Please try again.</p>`;
+      document.body.appendChild(errorMessage);
+
+      setTimeout(() => {
+        errorMessage.remove();
+      }, 3000);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
 
   const projects = [
     {
@@ -329,8 +383,8 @@ export default router;`;
                         size="sm"
                         onClick={(e) => {
                           e.stopPropagation();
-                          // In a real app, this would open the code editor for this project
-                          console.log(`Opening code editor for ${project.id}`);
+                          // Show project details section
+                          setSelectedProject(project.id);
                         }}
                       >
                         <Code className="h-4 w-4 mr-1" /> View Code
@@ -339,13 +393,50 @@ export default router;`;
                         size="sm"
                         onClick={(e) => {
                           e.stopPropagation();
-                          // In a real app, this would open the generation options
-                          console.log(
-                            `Opening generation options for ${project.id}`,
-                          );
+                          // Navigate to component generator
+                          const projectName = project.name;
+                          const message = document.createElement("div");
+                          message.className =
+                            "fixed top-4 right-4 bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded z-50";
+                          message.innerHTML = `<p>Opening component generator for ${projectName}...</p>`;
+                          document.body.appendChild(message);
+
+                          setTimeout(() => {
+                            message.remove();
+                            window.location.href = "/component-generator";
+                          }, 500);
                         }}
+                        disabled={isGenerating}
                       >
-                        <RefreshCw className="h-4 w-4 mr-1" /> Generate More
+                        {isGenerating && selectedProject === project.id ? (
+                          <>
+                            <svg
+                              className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                            >
+                              <circle
+                                className="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                strokeWidth="4"
+                              ></circle>
+                              <path
+                                className="opacity-75"
+                                fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                              ></path>
+                            </svg>
+                            Generating...
+                          </>
+                        ) : (
+                          <>
+                            <RefreshCw className="h-4 w-4 mr-1" /> Generate More
+                          </>
+                        )}
                       </Button>
                     </div>
                   </CardContent>
@@ -406,38 +497,77 @@ export default router;`;
                           Generated Components
                         </h3>
                         <div className="flex flex-wrap gap-2">
-                          <span className="px-2 py-1 bg-primary/10 rounded-md text-sm">
+                          <span
+                            id={`${selectedProject}-header`}
+                            className="px-2 py-1 bg-primary/10 rounded-md text-sm transition-all duration-500 hover:bg-primary/30 cursor-pointer"
+                          >
                             Header
                           </span>
-                          <span className="px-2 py-1 bg-primary/10 rounded-md text-sm">
+                          <span
+                            id={`${selectedProject}-footer`}
+                            className="px-2 py-1 bg-primary/10 rounded-md text-sm transition-all duration-500 hover:bg-primary/30 cursor-pointer"
+                          >
                             Footer
                           </span>
-                          <span className="px-2 py-1 bg-primary/10 rounded-md text-sm">
+                          <span
+                            id={`${selectedProject}-product`}
+                            className="px-2 py-1 bg-primary/10 rounded-md text-sm transition-all duration-500 hover:bg-primary/30 cursor-pointer"
+                          >
                             ProductCard
                           </span>
-                          <span className="px-2 py-1 bg-primary/10 rounded-md text-sm">
+                          <span className="px-2 py-1 bg-primary/10 rounded-md text-sm transition-all duration-500 hover:bg-primary/30 cursor-pointer">
                             ProductList
                           </span>
-                          <span className="px-2 py-1 bg-primary/10 rounded-md text-sm">
+                          <span className="px-2 py-1 bg-primary/10 rounded-md text-sm transition-all duration-500 hover:bg-primary/30 cursor-pointer">
                             ProductDetail
                           </span>
-                          <span className="px-2 py-1 bg-primary/10 rounded-md text-sm">
+                          <span className="px-2 py-1 bg-primary/10 rounded-md text-sm transition-all duration-500 hover:bg-primary/30 cursor-pointer">
                             Cart
                           </span>
-                          <span className="px-2 py-1 bg-primary/10 rounded-md text-sm">
+                          <span className="px-2 py-1 bg-primary/10 rounded-md text-sm transition-all duration-500 hover:bg-primary/30 cursor-pointer">
                             Checkout
                           </span>
                         </div>
                       </div>
                     </div>
                     <div className="md:col-span-2">
-                      <h3 className="font-medium mb-2">Generated Code</h3>
-                      <CodeEditor
-                        code={sampleCode}
-                        language="javascript"
-                        title="api/products.js"
-                        height="300px"
-                      />
+                      <div className="space-y-4">
+                        <div className="flex space-x-4 mb-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="text-xs bg-primary/10"
+                            onClick={() => alert("Showing API Routes")}
+                          >
+                            API Routes
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="text-xs"
+                            onClick={() => alert("Showing Components")}
+                          >
+                            Components
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="text-xs"
+                            onClick={() => alert("Showing Models")}
+                          >
+                            Models
+                          </Button>
+                        </div>
+                        <div className="border rounded-lg overflow-hidden">
+                          {selectedProject === "proj-1" ? (
+                            <ReactTemplate />
+                          ) : selectedProject === "proj-2" ? (
+                            <CloudflareTemplate />
+                          ) : (
+                            <NextjsTemplate />
+                          )}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </CardContent>
@@ -469,19 +599,49 @@ export default router;`;
                     <Button
                       className="w-full"
                       onClick={() => {
-                        // In a real app, this would open the generator for this tool
-                        console.log(`Starting generator for ${tool.id}`);
-                        // Redirect to the generator section
-                        const generatorSection =
-                          document.getElementById("generator-section");
-                        if (generatorSection) {
-                          generatorSection.scrollIntoView({
-                            behavior: "smooth",
-                          });
-                        }
+                        // Navigate to the specific generator page
+                        const message = document.createElement("div");
+                        message.className =
+                          "fixed top-4 right-4 bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded z-50";
+                        message.innerHTML = `<p>Opening ${tool.name}...</p>`;
+                        document.body.appendChild(message);
+
+                        setTimeout(() => {
+                          message.remove();
+                          window.location.href = `/${tool.id}`;
+                        }, 500);
                       }}
+                      disabled={isGenerating}
                     >
-                      <Zap className="mr-2 h-4 w-4" /> Start Generating
+                      {isGenerating ? (
+                        <>
+                          <svg
+                            className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <circle
+                              className="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                            ></circle>
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                            ></path>
+                          </svg>
+                          Generating...
+                        </>
+                      ) : (
+                        <>
+                          <Zap className="mr-2 h-4 w-4" /> Start Generating
+                        </>
+                      )}
                     </Button>
                   </CardContent>
                 </Card>

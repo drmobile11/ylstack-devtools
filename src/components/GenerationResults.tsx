@@ -1,8 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { CheckCircle, Download, ArrowLeft, ArrowRight } from "lucide-react";
+import NextjsTemplate from "../templates/NextjsTemplate";
+import ReactTemplate from "../templates/ReactTemplate";
+import NodejsTemplate from "../templates/NodejsTemplate";
+import CloudflareTemplate from "../templates/CloudflareTemplate";
 
 import GeneratedCodePreview from "./GeneratedCodePreview";
 import ProjectStructure from "./ProjectStructure";
@@ -96,11 +100,38 @@ const GenerationResults = ({
 }: GenerationResultsProps) => {
   const [activeFile, setActiveFile] = useState(generatedFiles[0]?.name || "");
   const [activeTab, setActiveTab] = useState("code");
+  const [selectedTemplate, setSelectedTemplate] = useState("nextjs");
 
   const handleFileSelect = (fileName: string) => {
     setActiveFile(fileName);
     setActiveTab("code");
+
+    // Show the file content being loaded
+    alert(`Loading ${fileName}...`);
+
+    // In a real app, this would fetch the file content from the backend
+    console.log(`Selected file: ${fileName}`);
   };
+
+  // In a real app, this would be populated from the AI service response
+  const loadGeneratedFiles = async () => {
+    try {
+      // Simulate API call with timeout
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // In a real app, we would update the state with the generated files
+      console.log("Generated files loaded");
+    } catch (error) {
+      console.error("Failed to load generated files:", error);
+    }
+  };
+
+  // Call this function when the component mounts
+  useEffect(() => {
+    if (generationStatus === "success") {
+      loadGeneratedFiles();
+    }
+  }, [generationStatus]);
 
   if (generationStatus === "generating") {
     return (
@@ -150,6 +181,20 @@ const GenerationResults = ({
     );
   }
 
+  const renderTemplate = () => {
+    switch (selectedTemplate) {
+      case "react":
+        return <ReactTemplate />;
+      case "nodejs":
+        return <NodejsTemplate />;
+      case "cloudflare":
+        return <CloudflareTemplate />;
+      case "nextjs":
+      default:
+        return <NextjsTemplate />;
+    }
+  };
+
   return (
     <div className="w-full bg-card text-card-foreground p-6 rounded-lg shadow-sm border border-border">
       <div className="flex items-center justify-between mb-6">
@@ -192,10 +237,57 @@ const GenerationResults = ({
               />
             </div>
             <div className="lg:col-span-3">
-              <GeneratedCodePreview
-                files={generatedFiles}
-                onDownload={onDownload}
-              />
+              <div className="space-y-4">
+                <div className="flex space-x-4 mb-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className={`text-xs ${selectedTemplate === "react" ? "bg-primary/10" : ""}`}
+                    onClick={() => {
+                      alert("Loading React template...");
+                      setSelectedTemplate("react");
+                    }}
+                  >
+                    React Template
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className={`text-xs ${selectedTemplate === "nextjs" ? "bg-primary/10" : ""}`}
+                    onClick={() => {
+                      alert("Loading Next.js template...");
+                      setSelectedTemplate("nextjs");
+                    }}
+                  >
+                    Next.js Template
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className={`text-xs ${selectedTemplate === "nodejs" ? "bg-primary/10" : ""}`}
+                    onClick={() => {
+                      alert("Loading Node.js template...");
+                      setSelectedTemplate("nodejs");
+                    }}
+                  >
+                    Node.js Template
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className={`text-xs ${selectedTemplate === "cloudflare" ? "bg-primary/10" : ""}`}
+                    onClick={() => {
+                      alert("Loading Cloudflare template...");
+                      setSelectedTemplate("cloudflare");
+                    }}
+                  >
+                    Cloudflare Template
+                  </Button>
+                </div>
+                <div className="border rounded-lg overflow-hidden">
+                  {renderTemplate()}
+                </div>
+              </div>
             </div>
           </div>
         </TabsContent>
@@ -205,9 +297,28 @@ const GenerationResults = ({
             <div className="lg:col-span-1">
               <DownloadOptions
                 projectName={projectName}
-                onDownloadZip={onDownload}
-                onCopyInstructions={onCopyInstructions}
-                onViewDeployment={onViewDeployment}
+                onDownloadZip={() => {
+                  alert("Downloading project as ZIP...");
+                  setTimeout(() => {
+                    alert(
+                      "Download complete! Project saved to your downloads folder.",
+                    );
+                  }, 2000);
+                  onDownload();
+                }}
+                onCopyInstructions={() => {
+                  alert("Copying deployment instructions to clipboard...");
+                  setTimeout(() => {
+                    alert(
+                      "Instructions copied! You can now paste them anywhere.",
+                    );
+                  }, 1000);
+                  onCopyInstructions();
+                }}
+                onViewDeployment={() => {
+                  alert("Opening deployment documentation...");
+                  onViewDeployment();
+                }}
               />
             </div>
             <div className="lg:col-span-1">

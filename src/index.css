@@ -101,6 +101,11 @@
     animation: float 6s ease-in-out infinite;
   }
 
+  .generated {
+    @apply bg-green-500/20 border border-green-500/50;
+    animation: pulse 2s ease-in-out;
+  }
+
   @keyframes float {
     0% {
       transform: translateY(0px);
@@ -110,6 +115,21 @@
     }
     100% {
       transform: translateY(0px);
+    }
+  }
+
+  @keyframes pulse {
+    0% {
+      transform: scale(1);
+      box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7);
+    }
+    50% {
+      transform: scale(1.05);
+      box-shadow: 0 0 0 10px rgba(74, 222, 128, 0);
+    }
+    100% {
+      transform: scale(1);
+      box-shadow: 0 0 0 0 rgba(74, 222, 128, 0);
     }
   }
 }

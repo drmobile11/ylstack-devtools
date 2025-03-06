@@ -151,7 +151,7 @@ const ProjectGenerator: React.FC<ProjectGeneratorProps> = ({
     }
   };
 
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
     setIsGenerating(true);
 
     // Check if API key is required but not provided
@@ -169,27 +169,39 @@ const ProjectGenerator: React.FC<ProjectGeneratorProps> = ({
       return;
     }
 
-    // Simulate real generation progress
-    let progress = 0;
-    const interval = setInterval(() => {
-      // Make progress more realistic with variable increments
-      const increment = Math.random() * 3 + 1; // 1-4% increment
-      progress += increment;
-      progress = Math.min(progress, 99); // Cap at 99% until complete
-      setGenerationProgress(progress);
+    // Create specific files based on project configuration
+    const filesToCreate = [
+      { name: "index.html", progress: 10 },
+      { name: "package.json", progress: 20 },
+      { name: "tsconfig.json", progress: 30 },
+      { name: "src/main.tsx", progress: 40 },
+      { name: "src/App.tsx", progress: 50 },
+      { name: "src/components/Header.tsx", progress: 60 },
+      { name: "src/components/Footer.tsx", progress: 70 },
+      { name: "src/pages/Home.tsx", progress: 80 },
+      { name: "src/api/index.ts", progress: 90 },
+      { name: "README.md", progress: 95 },
+    ];
 
-      if (progress >= 99) {
-        // Final step to 100%
-        clearInterval(interval);
-        setTimeout(() => {
-          setGenerationProgress(100);
-          setTimeout(() => {
-            setIsGenerating(false);
-            onComplete(projectData);
-          }, 500);
-        }, 1000);
+    // Simulate real file creation with alerts
+    for (const file of filesToCreate) {
+      setGenerationProgress(file.progress);
+      // Update progress message for each major file being created
+      if (file.progress % 20 === 0 || file.progress === 95) {
+        setGenerationProgress(file.progress);
       }
-    }, 300);
+      // Wait a bit between files
+      await new Promise((resolve) => setTimeout(resolve, 500));
+    }
+
+    // Final step to 100%
+    setGenerationProgress(100);
+    // Project generation complete
+
+    setTimeout(() => {
+      setIsGenerating(false);
+      onComplete(projectData);
+    }, 500);
   };
 
   const renderStepContent = () => {
@@ -390,7 +402,19 @@ const ProjectGenerator: React.FC<ProjectGeneratorProps> = ({
                 </div>
               ) : (
                 <Button
-                  onClick={handleGenerate}
+                  onClick={() => {
+                    const message = document.createElement("div");
+                    message.className =
+                      "fixed top-4 right-4 bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded z-50";
+                    message.innerHTML =
+                      "<p>Starting full-stack project generation...</p>";
+                    document.body.appendChild(message);
+
+                    setTimeout(() => {
+                      message.remove();
+                      handleGenerate();
+                    }, 500);
+                  }}
                   className="w-full py-6 text-lg bg-primary hover:bg-primary/90 text-primary-foreground"
                 >
                   <Rocket className="mr-2 h-5 w-5" />

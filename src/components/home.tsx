@@ -4,6 +4,10 @@ import HeroSection from "./HeroSection";
 import FeatureSection from "./FeatureSection";
 import FeatureShowcase from "./FeatureShowcase";
 import VideoShowcase from "./VideoShowcase";
+import NextjsTemplate from "../templates/NextjsTemplate";
+import ReactTemplate from "../templates/ReactTemplate";
+import NodejsTemplate from "../templates/NodejsTemplate";
+import CloudflareTemplate from "../templates/CloudflareTemplate";
 import ProjectGenerator from "./ProjectGenerator";
 import GenerationResults from "./GenerationResults";
 import Footer from "./Footer";
@@ -176,10 +180,22 @@ const Home = () => {
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                       <button
-                        onClick={handleStartProject}
+                        onClick={() => {
+                          const message = document.createElement("div");
+                          message.className =
+                            "fixed top-4 right-4 bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded z-50";
+                          message.innerHTML = "<p>Opening Generator Hub...</p>";
+                          document.body.appendChild(message);
+                          setTimeout(() => {
+                            message.remove();
+                            window.location.href = "/generator-hub";
+                          }, 500);
+                        }}
                         className="px-5 py-2 text-sm bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-all duration-300 font-medium group relative overflow-hidden"
                       >
-                        <span className="relative z-10">Start New Project</span>
+                        <span className="relative z-10">
+                          Explore All Generators
+                        </span>
                         <span className="absolute inset-0 bg-gradient-to-r from-primary to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                       </button>
                       <button
